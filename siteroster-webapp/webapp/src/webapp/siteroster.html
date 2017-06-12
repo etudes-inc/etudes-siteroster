@@ -1,0 +1,422 @@
+<style type="text/css" media="all">
+.addedUser
+{
+	background: #C8CFB4;
+}
+.blockedUser
+{
+	background: #FFBAD2;
+}
+.droppedUser
+{
+	color: red;
+}
+
+#roster_group_members
+{
+	width: 336px;
+	font-size: 11px;
+	background-color: #D6FDD6;
+}
+#roster_site_members
+{
+	width: 336px;
+	font-size: 11px;
+	background-color: #F2E6E6;
+}
+#roster_remove_from_group
+{
+	padding-left: 20px;
+	background-color: #F2E6E6;
+	background-position: center left;
+	background-repeat: no-repeat;
+	background-image:url(support/icons/arrow_left.png);
+	font-size: 11px;
+}
+#roster_add_to_group
+{
+	padding-right: 20px;
+	background-color: #D6FDD6;
+	background-position: center right;
+	background-repeat: no-repeat;
+	background-image:url(support/icons/arrow_right.png);
+	font-size: 11px;
+}
+#roster_configure
+{
+	background:url(support/icons/cog_edit.png) left top no-repeat;
+	padding-left: 20px;
+}
+
+</style>
+<div class="e3_tool_header">
+	<div id="roster_site_title_link" class="e3_tool_mode_title e3_offstage">
+		<span class="e3_data_header">Site: </span><a href="" id="roster_site_title_l" class="e3_toolUiLink"></a><span id= "roster_site_title_s"></span>
+	</div>
+	<div class="e3_tool_header_right">
+		<a id="roster_configure" href="" class="e3_toolUiLink e3_offstage">Site Setup</a>
+	</div>
+</div>
+<div id="roster_mode_bar" style="margin-bottom:22px;" class="e3_tool_mode_bar">
+</div>
+
+<div id="roster_members" class="e3_offstage">
+	<div id="roster_members_navbar_top" class="e3_tool_navbar">
+	</div>
+	<div class="e3_instructions">
+		Summary of Enrollment:
+		<div style="display:table-row">
+			<div style="display:table-cell; width:48%;">
+				<ul>
+					<li> <span id="roster_members_enrolled_count"></span> student<span id="roster_members_enrolled_plural"></span> enrolled</li>
+					<li> <span id="roster_members_added_count"></span> student<span id="roster_members_added_plural"></span> added</li>
+					<li> <span id="roster_members_dropped_count"></span> student<span id="roster_members_dropped_plural"></span> dropped</li>
+					<li> <span id="roster_members_blocked_count"></span> student<span id="roster_members_blocked_plural"></span> blocked</li>
+				</ul>
+			</div>
+			<div style="display:table-cell; width:4%;">&nbsp;</div>
+			<div style="display:table-cell; width:48%;">
+				<ul>
+					<li> <span id="roster_members_instructor_count"></span> instructor<span id="roster_members_instructor_plural"></span></li>
+					<li> <span id="roster_members_ta_count"></span> teaching assistant<span id="roster_members_ta_plural"></span></li>
+					<li> <span id="roster_members_guest_count"></span> guest<span id="roster_members_guest_plural"></span></li>
+					<li id="roster_member_observer_item"> <span id="roster_members_observer_count"></span> observer<span id="roster_members_observer_plural"></span></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div id="roster_members_actions" class="e3_tool_actions">
+	</div>
+	<div class="e3_tool_items">
+		<table id="roster_members_item_table" class="e3_tool_item_table e3_sortable_table">
+			<thead />
+			<tbody />
+		</table>
+	</div>
+	<div style="font-size: 11px; text-align: right; margin-right: 20px; margin-top: 20px;">
+		<span style="border: 1px solid black; padding: 0.25em 1em 0.25em 1em;">Registrar User</span>
+		<span class="addedUser" style="border: 1px solid black; padding: 0.25em 1em 0.25em 1em;">Added User</span>
+		<span class="blockedUser" style="border: 1px solid black; padding: 0.25em 1em 0.25em 1em;">Blocked User</span>
+	</div>
+	<div id="roster_members_navbar" class="e3_tool_navbar">
+	</div>
+</div>
+
+<div id="roster_groups" class="e3_offstage">
+	<div id="roster_groups_actions" class="e3_tool_actions">
+		<ul>
+			<li><a style="background-image:url(support/icons/document_add.png);" href="" onclick="tool_obj.editGroup(tool_obj, null);return false;">Add</a></li>
+			<li selectrequired="selectGroup"><a class="disabled" style="background-image:url(support/icons/delete.png);" href="" onclick="tool_obj.deleteGroups(tool_obj);return false;">Delete</a></li>
+		</ul>	
+	</div>
+	<div class="e3_tool_items">
+		<table id="roster_groups_item_table" class="e3_tool_item_table e3_sortable_table">
+			<thead />
+			<tbody />
+		</table>
+	</div>
+	<div id="roster_groups_navbar" class="e3_tool_navbar">
+	</div>
+</div>
+
+<div id="roster_confirmRemove" title="Confirm Remove">
+	Are you sure you want to remove the selected members?  Members unable to be removed will be inactived.
+	<div class="e3_dialog_footnote">Note: Registrar members may be dropped only through your campus Registrar.</div>
+</div>
+<div id="roster_confirmInactivate" title="Confirm Block">
+Are you sure you want to block these members, denying access to the site? 
+</div>
+<div id="roster_confirmActivate" title="Confirm Unblock">
+Are you sure you want to unblock these members, restoring access to this site? 
+</div>
+<div id="roster_alertSelect" title="First Select Members">
+You must first select one or more members, using the check boxes.
+</div>
+<div id="roster_roleChange" title="Role">
+	<div class="e3_dialog_instructions e3_wide">Note: Registrar members' roles can be set only by your campus Registrar.</div>
+	<div class="e3_dialog_section">
+		<div class="e3_dialog_header">Assign a new role:</div>
+		<div>
+			<input type="radio" name="newRole" value="Instructor" id="roster_newRoleInstructor" />
+			<label for="roster_newRoleInstructor">Instructor</label>
+		</div>
+		<div>
+			<input type="radio" name="newRole" value="Teaching Assistant" id="roster_newRoleTeachingAssistant" />
+			<label for="roster_newRoleTeachingAssistant">Teaching Assistant</label>
+		</div>
+		<div>
+			<input type="radio" name="newRole" value="Student" id="roster_newRoleStudent" checked="checked" />
+			<label for="roster_newRoleStudent">Student</label>
+		</div>
+		<div>
+			<input type="radio" name="newRole" value="Guest" id="roster_newRoleGuest" />
+			<label for="roster_newRoleGuest">Guest</label>
+		</div>
+	</div>
+</div>
+<div id="roster_addUser" title="Add Members">
+	<div class="e3_dialog_instructions e3_wide">Add new members to your site.  This is for guest members who are not officially registered.  It is best NOT to add students in this way - rely on your school's registration process to get your students access to your site.</div>
+	<div class="e3_dialog_section">
+		<div class="e3_dialog_header">Users</div>
+		<div class="e3_dialog_instructions">
+			<ul>
+				<li>For users already in Etudes, enter their user id or the email address they use in Etudes.</li>
+				<li>For users new to Etudes, enter their email address to create a guest account for them.</li>
+			</ul>
+			If you need more than one, enter them one per line.
+		</div>
+		<div class="e3_stacked_edit">
+			<div class="e3_stacked_edit_field">
+				<textarea id="roster_addUser_identifiers" cols="50" rows="4" wrap="virtual">
+				</textarea>
+			</div>
+		</div>
+	</div>
+	<div class="e3_dialog_section">
+		<div class="e3_dialog_header">Role</div>
+		<div class="e3_dialog_instructions">Select a role for the new members.</div>
+		<div>
+			<input type="radio" name="assignRole" value="Instructor" id="roster_assignRoleInstructor" />
+			<label for="roster_assignRoleInstructor">Instructor</label>
+		</div>
+		<div>
+			<input type="radio" name="assignRole" value="Teaching Assistant" id="roster_assignRoleTeachingAssistant" />
+			<label for="roster_assignRoleTeachingAssistant">Teaching Assistant</label>
+		</div>
+		<div>
+			<input type="radio" name="assignRole" value="Student" id="roster_assignRoleStudent" checked="checked" />
+			<label for="roster_assignRoleStudent">Student</label>
+		</div>
+		<div>
+			<input type="radio" name="assignRole" value="Guest" id="roster_assignRoleGuest" />
+			<label for="roster_assignRoleGuest">Guest</label>
+		</div>
+	</div>
+</div>
+<div id="roster_addUserResults" title="Add Members">
+	<div class="e3_dialog_instructions e3_wide">Here are the results of your add members request.</div>
+	<div class="e3_dialog_section">
+		<div class="e3_stacked_edit">
+			<div class="e3_stacked_edit_field">
+				<table id="roster_addUserResults_users" style="font-size:inherit; width:100%; border-collapse:collapse; text-align:left; border:1px solid #bbb;">
+					<thead>
+						<tr style="line-height: 2em; vertical-align:middle;">
+							<th class="e3_data_header" style="background-color:#EEEEEE; width:2em;"></th>
+							<th class="e3_data_header" style="background-color:#EEEEEE;">User ID</th>
+							<th class="e3_data_header" style="background-color:#EEEEEE;">Status</th>
+							<th class="e3_data_header" style="background-color:#EEEEEE;">Name</th>
+						</tr>
+					</thead>
+					<tbody />
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="roster_removeUserResults" title="Remove Members">
+	<div class="e3_dialog_instructions e3_wide">Here are the results of your remove members request.</div>
+	<div class="e3_dialog_section">
+		<div class="e3_stacked_edit">
+			<div class="e3_stacked_edit_field">
+				<table id="roster_removeUserResults_users" style="font-size:inherit; width:100%; border-collapse:collapse; text-align:left; border:1px solid #bbb;">
+					<thead>
+						<tr style="line-height: 2em; vertical-align:middle;">
+							<th class="e3_data_header" style="background-color:#EEEEEE; width:2em;"></th>
+							<th class="e3_data_header" style="background-color:#EEEEEE;">Name</th>
+							<th class="e3_data_header" style="background-color:#EEEEEE;">Status</th>
+						</tr>
+					</thead>
+					<tbody />
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="roster_activateUserResults" title="Unblock Members">
+	<div class="e3_dialog_instructions e3_wide">Here are the results of your unblock members request.</div>
+	<div class="e3_dialog_section">
+		<div class="e3_stacked_edit">
+			<div class="e3_stacked_edit_field">
+				<table id="roster_activateUserResults_users" style="font-size:inherit; width:100%; border-collapse:collapse; text-align:left; border:1px solid #bbb;">
+					<thead>
+						<tr style="line-height: 2em; vertical-align:middle;">
+							<th class="e3_data_header" style="background-color:#EEEEEE; width:2em;"></th>
+							<th class="e3_data_header" style="background-color:#EEEEEE;">Name</th>
+							<th class="e3_data_header" style="background-color:#EEEEEE;">Status</th>
+						</tr>
+					</thead>
+					<tbody />
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="roster_inactivateUserResults" title="Block Members">
+	<div class="e3_dialog_instructions e3_wide">Here are the results of your block members request.</div>
+	<div class="e3_dialog_section">
+		<div class="e3_stacked_edit">
+			<div class="e3_stacked_edit_field">
+				<table id="roster_inactivateUserResults_users" style="font-size:inherit; width:100%; border-collapse:collapse; text-align:left; border:1px solid #bbb;">
+					<thead>
+						<tr style="line-height: 2em; vertical-align:middle;">
+							<th class="e3_data_header" style="background-color:#EEEEEE; width:2em;"></th>
+							<th class="e3_data_header" style="background-color:#EEEEEE;">Name</th>
+							<th class="e3_data_header" style="background-color:#EEEEEE;">Status</th>
+						</tr>
+					</thead>
+					<tbody />
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="roster_changeRoleResults" title="Change Role">
+	<div class="e3_dialog_instructions e3_wide">Here are the results of your change role request.</div>
+	<div class="e3_dialog_section">
+		<div class="e3_stacked_edit">
+			<div class="e3_stacked_edit_field">
+				<table id="roster_changeRoleResults_users" style="font-size:inherit; width:100%; border-collapse:collapse; text-align:left; border:1px solid #bbb;">
+					<thead>
+						<tr style="line-height: 2em; vertical-align:middle;">
+							<th class="e3_data_header" style="background-color:#EEEEEE; width:2em;"></th>
+							<th class="e3_data_header" style="background-color:#EEEEEE;">Name</th>
+							<th class="e3_data_header" style="background-color:#EEEEEE;">Status</th>
+						</tr>
+					</thead>
+					<tbody />
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="roster_confirmDelete" title="Confirm Delete">
+	Are you sure you want to remove the selected groups?
+</div>
+<div id="roster_alertSelectGroup" title="First Select Groups">
+You must first select one or more groups, using the check boxes.
+</div>
+<div id="roster_alertNoSave" title="Problems Exist">
+	<div class="e3_alert">
+		Before saving, please resolve the problems in the information you provided.
+	</div>
+</div>
+<div id="roster_editGroup" title="Add Group">
+	<div class="e3_dialog_section">
+		<div class="e3_edit_set" style="margin-bottom:8px;">
+			<div class="e3_edit_set_row">
+				<div class="e3_edit_set_entry_header" style="background-image:url(support/icons/tag_red.png);">Title:</div>
+				<div class="e3_edit_set_entry_field">
+					<input type="text" id="roster_editGroupTitle" size="60" />
+					<div class="e3_alert e3_offstage" id="roster_group_title_used">The title must be unique among groups in this site.</div>
+					<div class="e3_alert e3_offstage" id="roster_group_no_title">The title must be defined.</div>
+				</div>
+			</div>
+		</div>
+		<div style="display: table;">
+			<div style="display: table-cell;">
+				<div style="text-align: center; font-weight:bold;">
+					<span class="e3_data_header">Site Members</span>
+					<input style="float:right; margin-bottom: 4px; margin-right: 16px;" type="button" id="roster_add_to_group" value="Add" title="Add To Group" />
+				</div>
+				<select multiple="multiple" size="25" id="roster_site_members">
+				</select>
+			</div>
+			<div style="display: table-cell; padding-left: 1em;">
+				<div style="text-align: center;">
+					<input style="float:left; margin-bottom: 4px; margin-left: 16px;" type="button" id="roster_remove_from_group" value="Remove" title="Remove From Group" />
+					<span class="e3_data_header">Group Members</span>
+				</div>
+				<select multiple="multiple" size="25" id="roster_group_members">
+				</select>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="roster_specialAccess" title="Special Access" style="display: none;">
+	<div class="e3_dialog_instructions e3_wide">Set special access for <span class="roster_specialAccess_name" style="font-weight:bold; color:black; font-style:normal;"></span> for all items in your site.</div>
+	<div class="e3_dialog_section">
+		<div class="e3_dialog_header">Extend Due Date</div>
+		<div class="e3_dialog_instructions">
+			Extend the due and allow until dates in Modules, Discussions, and AT&S
+		</div>
+		<div class="e3_configure_set">
+			<div class="e3_configure_set_row">
+				<div class="e3_configure_set_entry_header">
+					# Days:
+				</div>
+				<div class="e3_configure_set_entry_field">
+					<input id="roster_specialAccess_days" type="text" size="20" />
+					<div class="e3_alert e3_offstage" id="roster_specialAccess_alert_days">Enter a whole number &gt; 0</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="e3_dialog_section">
+		<div class="e3_dialog_header">Extend Time Limit</div>
+		<div class="e3_dialog_instructions">
+			Extend the time limit for timed assessments in AT&S. Specify one of the following:
+		</div>
+		<div class="e3_alert e3_offstage" id="roster_specialAccess_alert_select1">Specify only one.</div>
+		<div class="e3_configure_set">
+			<div class="e3_configure_set_row">
+				<div class="e3_configure_set_entry_header">Time Value:</div>
+				<div class="e3_configure_set_entry_field">
+					<input id="roster_specialAccess_timeLimit" type="text" size="20" />
+					<div class="e3_alert e3_offstage" id="roster_specialAccess_alert_limit">Enter a time value (hh:mm, i.e. 01:30, 0:45)</div>
+				</div>
+			</div>
+			<div class="e3_configure_set_row">
+				<div class="e3_configure_set_entry_header"></div>
+				<div class="e3_configure_set_entry_field"><div class="e3_dialog_instructions">To be added to the assessment's time limit</div></div>
+			</div>
+			<div class="e3_configure_set_row">
+				<div class="e3_configure_set_entry_header">
+					Time Multiplier:
+				</div>
+				<div class="e3_configure_set_entry_field">
+					<input id="roster_specialAccess_timeMultiplier" type="text" size="20" />
+					<div class="e3_alert e3_offstage" id="roster_specialAccess_alert_multiplier">Enter a real number &gt; 1.0</div>
+				</div>
+			</div>
+			<div class="e3_configure_set_row">
+				<div class="e3_configure_set_entry_header"></div>
+				<div class="e3_configure_set_entry_field"><div class="e3_dialog_instructions">To be multiplied with the assessment's time limit</div></div>
+			</div>
+		 </div>
+		   <div class="e3_dialog_instructions">
+			  Remove the time limit for all timed assessments for this student.
+		    </div>
+		    <div class="e3_configure_set">
+		    <div class="e3_configure_set_row">
+		      <div class="e3_configure_set_entry_header">
+					Untimed:
+				</div>
+		      <div class="e3_configure_set_entry_field">
+				<input id="roster_specialAccess_untimed" type="checkbox" />
+			  </div>
+			</div>  
+		</div>
+	</div>
+	<div style="margin-bottom:20px;" class="e3_alert e3_offstage" id="roster_specialAccess_message">Existing special access for <span class="roster_specialAccess_name" style="font-weight:bold; color:black; font-style:normal;"></span> will be replaced in:<ul><li id="roster_specialAccess_message_tools"></li></ul></div>
+</div>
+<div id="roster_specialAccess_success" title="Special Access">
+	<div class="e3_dialog_plain e3_wide">
+		Special access has been updated for <span class="roster_specialAccess_name" style="font-weight:bold; color:black; font-style:normal;"></span> in the following tools:
+		<ul><li id="roster_specialAccess_results_msg"></li></ul>
+	</div>
+</div>
+<div id="roster_specialAccess_failed" title="Special Access">
+	<div class="e3_alert e3_wide" style="margin-bottom:18px;">
+		No special access was set.
+	</div>
+	<div class="e3_dialog_plain">
+		No items in the site qualify for this special access.<p>
+		Special access only applies to items that have due or accept until dates (when extending days),<br />or have a time limit (when extending the time limit).
+	</div>
+</div>
+<div id="roster_confirmDeleteSpecialAccess" title="Confirm Delete Special Access">
+	<div class="e3_dialog_plain">
+		Are you sure you want to delete this special access?<p>
+		Special access for due date(s) and time limit will be removed for this user from all items in the site.
+	</div>
+</div>

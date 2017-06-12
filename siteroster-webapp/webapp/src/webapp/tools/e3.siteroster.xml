@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<registration>
+
+	<tool
+			id="e3.siteroster"
+			title="Roster"
+			description="Roster"
+			dispatcher="E3"
+			e3Code="siteroster">
+
+		<!-- only for maintainer types -->
+		<configuration name="functions.require" value="site.upd" /> 
+
+	</tool>
+
+</registration>
